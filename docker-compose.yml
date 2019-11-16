@@ -1,13 +1,31 @@
 version: '3.2'
 
 services:
+  database:
+    image: mdillon/postgis
+    container_name: indoor_nav_database
+    environment:
+      - POSTGRES_PASSWORD=abc
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=indoor_nav
+    ports:
+      - '5432:5432'
   web:
     image: indoor-nav-path-finder:latest
     build:
       context: .
     container_name: indoor-nav-path-finder
     volumes:
-      - .:/indoor-navigation-path-finder
+      - .:/app
     command: bash -c "tail -f /dev/null"
     ports:
       - '3000:3000'
+  pgadmin:
+    image: "dpage/pgadmin4"
+    container_name: indoor_nav_pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "admin"
+      PGADMIN_DEFAULT_PASSWORD: "admin"
+      PGADMIN_CONFIG_CONSOLE_LOG_LEVEL: 40
+    ports:
+      - "5050:80"
