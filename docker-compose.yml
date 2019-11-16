@@ -1,0 +1,13 @@
+version: '3.2'
+
+services:
+  web:
+    image: indoor-nav-path-finder:latest
+    build:
+      context: .
+    container_name: indoor-nav-path-finder
+    volumes:
+      - .:/indoor-navigation-path-finder
+    command: bash -c "tail -f /dev/null"
+    ports:
+      - '3000:3000'

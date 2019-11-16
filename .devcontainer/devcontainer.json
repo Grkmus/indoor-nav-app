@@ -1,0 +1,12 @@
+// See https://aka.ms/vscode-remote/devcontainer.json for format details.
+{
+  "dockerComposeFile": [
+    "../docker-compose.yml"
+  ],
+  "service": "web",
+  "workspaceFolder": "/app",
+  "extensions": [
+    "ms-python.python"
+  ],
+  "postCreateCommand": "bash .devcontainer/postCreateCommand.sh"
+}
