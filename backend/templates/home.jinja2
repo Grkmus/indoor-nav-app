@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- Use correct character set. -->
+  <meta charset="utf-8">
+  <!-- Tell IE to use the latest, best version. -->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <!-- Make the application on mobile take up the full browser screen and disable user scaling. -->
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+  <title>Hello World!</title>
+  <link rel="stylesheet" href="../static/Cesium/Widgets/Animation/Animation.css">
+  <link rel="stylesheet" href="../static/Cesium/Widgets/bucket.css">
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script src="../static/Cesium/Cesium.js"></script>
+  <style>
+    @import url(../static/Cesium/Widgets/widgets.css);
+
+    html,
+    body,
+    #cesiumContainer {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+    }
+
+    #toolbar {
+      background: rgba(42, 42, 42, 0.8);
+      padding: 4px;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="cesiumContainer"></div>
+  <div id="toolbar">
+    <label for="from">From</label>
+    <input id="from" name="from" type="text">
+    <label for="to">To</label>
+    <input id="to" name="to" type="text">
+    <input type="checkbox" data-bind="checked: inverted"> Wheelchair
+    <button onclick="getRoute()" class="cesium-button">Get Route</button>
+  </div>
+
+  <script src="../static/app/main.js">
+
+  </script>
+</body>
+
+</html>

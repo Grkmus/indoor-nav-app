@@ -11,6 +11,8 @@ dist/
 nosetests.xml
 env*/
 tmp/
+Cesium*
+Converteritu
 Data.fs*
 *.sublime-project
 *.sublime-workspace
