@@ -5,7 +5,7 @@ from sqlalchemy.exc import DBAPIError
 
 from .. import models
 import json
-def sqlStringForFeatureCollection(table_name, geom_name='geom'):
+def sqlStringForFeatureCollection(table_name, geom_name="geom"):
     return """SELECT jsonb_build_object(
                 'type',     'FeatureCollection',
                 'features', jsonb_agg(feature)
@@ -28,42 +28,42 @@ def dijkstraString(edge_table, from_pnt, to_pnt, wheelchair=""):
             JOIN {edge_table} as f_edges ON result.edge = f_edges._id
         """.format(edge_table=edge_table, from_pnt=from_pnt, to_pnt=to_pnt, wheelchair=wheelchair)
 
-@view_config(route_name='rooms', renderer='json')
+@view_config(route_name="rooms", renderer="json")
 def rooms(request):
-    table_name = 'rooms'
+    table_name = "rooms"
     #result is a tuple so we need to get the 0 index
     result = request.dbsession.execute(sqlStringForFeatureCollection(table_name=table_name)).first()[0]  
-    return Response('done', status=200, json=result)
+    return Response("done", status=200, json=result)
 
-@view_config(route_name='edges', renderer='json')
+@view_config(route_name="edges", renderer="json")
 def edges(request):
-    table_name = 'edges'
+    table_name = "edges"
     #result is a tuple so we need to get the 0 index
     result = request.dbsession.execute(sqlStringForFeatureCollection(table_name=table_name)).first()[0]  
-    return Response('done', status=200, json=result)
+    return Response("done", status=200, json=result)
 
-@view_config(route_name='path', renderer='json')
+@view_config(route_name="path", renderer="json")
 def path(request):
-    edge_table = 'edges'
-    from_pnt = request.matchdict['from_pnt']
-    to_pnt = request.matchdict['to_pnt']
+    edge_table = "edges"
+    from_pnt = request.matchdict["from_pnt"]
+    to_pnt = request.matchdict["to_pnt"]
     wheelchair = ""
-    if request.params.get('wheelchair'):
+    if request.params.get("wheelchair"):
         wheelchair = "WHERE wheelchair=true"
     table_name = dijkstraString(edge_table, from_pnt, to_pnt, wheelchair)
     result = request.dbsession.execute(sqlStringForFeatureCollection(table_name=table_name)).first()[0]
-    return Response('done', status=200, json=result)
+    return Response("done", status=200, json=result)
 
-@view_config(route_name='nodes', renderer='json')
+@view_config(route_name="nodes", renderer="json")
 def nodes(request):
-    floor = request.matchdict['floor']
-    if floor == '1st':
-        table_name = 'first_floor_edges_vertices_pgr'
-    elif floor == '2nd':
-        table_name = 'second_floor_edges_vertices_pgr'
+    floor = request.matchdict["floor"]
+    if floor == "1st":
+        table_name = "first_floor_edges_vertices_pgr"
+    elif floor == "2nd":
+        table_name = "second_floor_edges_vertices_pgr"
     result = request.dbsession.execute(sqlStringForFeatureCollection(
         table_name=table_name,
-        geom_name='the_geom'
+        geom_name="the_geom"
         )).first()[0]
-    return Response('done', status=200, json=result)
+    return Response("done", status=200, json=result)
 
