@@ -2,7 +2,7 @@ version: '3.2'
 
 services:
   database:
-    image: mdillon/postgis
+    image: pgrouting/pgrouting:v2.6.3-postgresql_11
     container_name: indoor_nav_database
     environment:
       - POSTGRES_PASSWORD=abc

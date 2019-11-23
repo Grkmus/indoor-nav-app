@@ -37,11 +37,7 @@ def rooms(request):
 
 @view_config(route_name='edges', renderer='json')
 def edges(request):
-    floor = request.matchdict['floor']
-    if floor == '1st':
-        table_name = 'first_floor_edges'
-    elif floor == '2nd':
-        table_name = 'second_floor_edges'
+    table_name = 'edges'
     #result is a tuple so we need to get the 0 index
     result = request.dbsession.execute(sqlStringForFeatureCollection(table_name=table_name)).first()[0]  
     return Response('done', status=200, json=result)
@@ -52,7 +48,7 @@ def path(request):
     from_pnt = request.matchdict['from_pnt']
     to_pnt = request.matchdict['to_pnt']
     wheelchair = ""
-    if request.params['wheelchair'] == 'True':
+    if request.params.get('wheelchair'):
         wheelchair = "WHERE wheelchair=true"
     table_name = dijkstraString(edge_table, from_pnt, to_pnt, wheelchair)
     result = request.dbsession.execute(sqlStringForFeatureCollection(table_name=table_name)).first()[0]
