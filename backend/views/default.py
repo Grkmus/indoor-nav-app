@@ -2,7 +2,6 @@ from pyramid.view import view_config
 from pyramid.response import Response
 
 from sqlalchemy.exc import DBAPIError
-
 from .. import models
 import json
 
@@ -23,7 +22,10 @@ def sqlStringForFeatureCollection(table_name, geom_name="geom"):
     )
 
 
-def dijkstraString(edge_table, from_pnt, to_pnt, wheelchair=""):
+def dijkstraString(request, edge_table, from_area, to_area, wheelchair=""):
+    # Need to convert area to point to get the query path.
+    from_pnt = request.dbsession.execute(f"SELECT _id FROM edges WHERE area = {from_area}").first()[0]
+    to_pnt = request.dbsession.execute(f"SELECT _id FROM edges WHERE area = {to_area}").first()[0]
     return """
             pgr_dijkstra(
                 'SELECT _id id, source, target, _length as cost, _length as reverse_cost 
@@ -64,7 +66,7 @@ def path(request):
     wheelchair = ""
     if request.params.get("wheelchair"):
         wheelchair = "WHERE wheelchair=true"
-    table_name = dijkstraString(edge_table, from_pnt, to_pnt, wheelchair)
+    table_name = dijkstraString(request, edge_table, from_pnt, to_pnt, wheelchair)
     result = request.dbsession.execute(
         sqlStringForFeatureCollection(table_name=table_name)
     ).first()[0]
