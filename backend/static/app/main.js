@@ -2,28 +2,13 @@ Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOi
 var viewer = new Cesium.Viewer('cesiumContainer');
 var tileset = viewer.scene.primitives.add(new Cesium.Cesium3DTileset({
     url: 'http://localhost:3000/static/Converteritu/tileset.json', // URL from `Starting the Server` section.
-}));
+}))
 // console.log(tileset.modelMatrix);
 var position = new Cesium.Cartesian3(
     4208684.741335429,
     2334783.82860767,
     4171228.132652792
 )
-// var edgesPosition3 = new Cesium.Cartesian3(
-//     -126.360932888,
-//     22.6368887922,
-//     114.059850757
-// )
-// var edgesPosition = new Cesium.Cartesian3(
-//     4208811.102268317,
-//     2334761.1917188778,
-//     4171112.072802035,
-// )
-// var edgesPosition2 = new Cesium.Cartesian3(
-//     1,
-//     1,
-//     1,
-// )
 
 tileset.modelMatrix = {
     0: 0.560397193631008,
@@ -62,6 +47,25 @@ var edgesModelMatrix = {
     15: 1
 }
 
+var roomsModelMatrix = {
+    0: -0.501795081973725,
+    1: -0.4375268738180708,
+    2: 0.746171515399756,
+    3: 0,
+    4: 0.5603972154125441,
+    5: -0.8215581258939546,
+    6: -0.10486756760543015,
+    7: 0,
+    8: 0.6589056508065848,
+    9: 0.3655304097672295,
+    10: 0.6574426688849394,
+    11: 0,
+    12: 4208684.741335429,
+    13: 2334783.82860767,
+    14: 4171228.132652792,
+    15: 1,
+}
+
 viewer.scene.globe.ellipsoid = Cesium.Ellipsoid.WGS84
 viewer.extend(Cesium.viewerCesiumInspectorMixin);
 var scene = viewer.scene
@@ -69,16 +73,22 @@ var scene = viewer.scene
 var handler = new Cesium.ScreenSpaceEventHandler(scene.canvas)
 handler.setInputAction(function (click) {
     var feature = scene.pick(click.position);
+    console.log(feature)
     if (feature instanceof Cesium.Cesium3DTileFeature) {
-        console.log(feature)
         feature.color = Cesium.Color.fromAlpha(Cesium.Color.GRAY, 0.5);
-        var propertyNames = feature.getPropertyNames();
-        var length = propertyNames.length;
-        for (var i = 0; i < length; ++i) {
-            var propertyName = propertyNames[i];
-            // console.log(propertyName + ': ' + feature.getProperty(propertyName));
-        }
+        // var propertyNames = feature.getPropertyNames();
+        // var length = propertyNames.length;
+        // for (var i = 0; i < length; ++i) {
+        //     var propertyName = propertyNames[i];
+        //     // console.log(propertyName + ': ' + feature.getProperty(propertyName));
+        // }
     }
+    // if (feature instanceof rooms) {
+    //     console.log(feature)
+    // }
+    // if (feature instanceof edges) {
+    //     console.log(feature)
+    // }
 }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
 
 
@@ -103,7 +113,7 @@ function getRoute() {
     console.log('Getting the route')
     var from = document.getElementById("from").value
     var to = document.getElementById("to").value
-    axios.get(`http://localhost:3000/path/${from}/${to}?wheelchair=False`).then(res => {
+    axios.get(`http://localhost:3000/path/${from}/${to}`).then(res => {
         queryPath = new Cesium.PolylineCollection()
         res.data.features.forEach(feature => {
             var coordinatesArray = []
@@ -176,44 +186,43 @@ axios.get('http://localhost:3000/rooms').then(res => {
         var coordinatesArray = []
         feature.geometry.coordinates[0].forEach(coordinatePair => {
             // console.log(coordinatePair)
+            coordinatePair[2] -= 0.5
             var vertex = new Cesium.Cartesian3.fromArray(coordinatePair)
+
             coordinatesArray.push(vertex)
         })
         // var polygon = 
         // var geometry = Cesium.PolygonGeometry.createGeometry(polygon);
         var geometryInstance = new Cesium.GeometryInstance({
-            // geometry: Cesium.PolygonGeometry.fromPositions({
-            //     positions: coordinatesArray,
+            geometry: Cesium.CoplanarPolygonGeometry.fromPositions({
+                positions: coordinatesArray,
+            }),
+            // geometry: Cesium.PolygonGeometry.createGeometry(new Cesium.PolygonGeometry({
+            //     polygonHierarchy: new Cesium.PolygonHierarchy(coordinatesArray),
             //     attributes: {
-            //         arcType: Cesium.ArcType.None,
-            //         height: 500
+            //         arcType: Cesium.ArcType.NONE
             //     }
-            // })
-            geometry: Cesium.PolygonGeometry.createGeometry(new Cesium.PolygonGeometry({
-                polygonHierarchy: new Cesium.PolygonHierarchy(coordinatesArray),
-                attributes: {
-                    arcType: Cesium.ArcType.NONE
-                }
-            })),
-            attributes: {
-                arcType: Cesium.ArcType.NONE
-            }
+            // })),
             // attributes: {
-            //     color: Cesium.ColorGeometryInstanceAttribute.fromColor(Cesium.Color.AQUA)
+            //     arcType: Cesium.ArcType.NONE
             // }
-        })
-        polygonInstances.push(geometryInstance)
-    })
-    rooms = new Cesium.Primitive({
+            attributes: {
+                color: Cesium.ColorGeometryInstanceAttribute.fromColor(new Cesium.Color(0.96, 0.85, 0.64, 0.2)),
+            },
+            id: feature.properties._area_id,
 
-        geometryInstances: polygonInstances,
-        appearance: new Cesium.MaterialAppearance({
-            material: Cesium.Material.fromType('Color'),
-            faceForward: true
-        }),
-        // modelMatrix: edgesModelMatrix,
-        asynchronous: false,
-        releaseGeometryInstances: false
+        })
+        // polygonInstances.push(geometryInstance)
+        room = new Cesium.Primitive({
+
+            geometryInstances: geometryInstance,
+            appearance: new Cesium.PerInstanceColorAppearance(),
+            modelMatrix: roomsModelMatrix,
+            asynchronous: false,
+            releaseGeometryInstances: false,
+        })
+        room.floor = feature.properties.level
+        scene.primitives.add(room)
     })
     // appearance: new Cesium.MaterialAppearance({
     //     material: Cesium.Material.fromType('Color'),
@@ -227,7 +236,8 @@ axios.get('http://localhost:3000/rooms').then(res => {
     //         }
     //     }
     // }),
-    scene.primitives.add(rooms)
+    // rooms = new Cesium.PrimitiveCollection();
+    // rooms.add(billboards); 
 })
 
 viewer.zoomTo(tileset);

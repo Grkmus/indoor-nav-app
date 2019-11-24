@@ -20,6 +20,7 @@ services:
     command: bash -c "tail -f /dev/null"
     ports:
       - '3000:3000'
+      - '8888:8888'
   pgadmin:
     image: "dpage/pgadmin4"
     container_name: indoor_nav_pgadmin4
