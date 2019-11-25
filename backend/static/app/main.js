@@ -113,7 +113,8 @@ function getRoute() {
     console.log('Getting the route')
     var from = document.getElementById("from").value
     var to = document.getElementById("to").value
-    axios.get(`http://localhost:3000/path/${from}/${to}`).then(res => {
+    var wheelchair = document.getElementById("wheelchair").checked
+    axios.get(`http://localhost:3000/path/${from}/${to}?wheelchair=${wheelchair}`).then(res => {
         queryPath = new Cesium.PolylineCollection()
         res.data.features.forEach(feature => {
             var coordinatesArray = []
@@ -181,7 +182,6 @@ var rooms;
 // ROOMS
 axios.get('http://localhost:3000/rooms').then(res => {
     // console.log(res.data)
-    var polygonInstances = []
     res.data.features.forEach(feature => {
         var coordinatesArray = []
         feature.geometry.coordinates[0].forEach(coordinatePair => {
@@ -191,28 +191,16 @@ axios.get('http://localhost:3000/rooms').then(res => {
 
             coordinatesArray.push(vertex)
         })
-        // var polygon = 
-        // var geometry = Cesium.PolygonGeometry.createGeometry(polygon);
         var geometryInstance = new Cesium.GeometryInstance({
             geometry: Cesium.CoplanarPolygonGeometry.fromPositions({
                 positions: coordinatesArray,
             }),
-            // geometry: Cesium.PolygonGeometry.createGeometry(new Cesium.PolygonGeometry({
-            //     polygonHierarchy: new Cesium.PolygonHierarchy(coordinatesArray),
-            //     attributes: {
-            //         arcType: Cesium.ArcType.NONE
-            //     }
-            // })),
-            // attributes: {
-            //     arcType: Cesium.ArcType.NONE
-            // }
             attributes: {
                 color: Cesium.ColorGeometryInstanceAttribute.fromColor(new Cesium.Color(0.96, 0.85, 0.64, 0.2)),
             },
             id: feature.properties._area_id,
 
         })
-        // polygonInstances.push(geometryInstance)
         room = new Cesium.Primitive({
 
             geometryInstances: geometryInstance,
@@ -222,7 +210,7 @@ axios.get('http://localhost:3000/rooms').then(res => {
             releaseGeometryInstances: false,
         })
         room.floor = feature.properties.level
-        scene.primitives.add(room)
+        // scene.primitives.add(room)
     })
     // appearance: new Cesium.MaterialAppearance({
     //     material: Cesium.Material.fromType('Color'),
@@ -256,7 +244,7 @@ viewer.zoomTo(tileset);
 // var rotationMatrix = Cesium.Matrix3.fromQuaternion(orientation)
 // Cesium.Matrix4.multiplyByMatrix3(edges.modelMatrix, rotationMatrix, edges.modelMatrix)
 
-function rotate(heading_angle, pitch_angle, roll_angle) {
+function rotate(heading_angle, pitch_angle, roll_angle, primitive) {
     // Rotate an object based on a position
     var hpr = new Cesium.HeadingPitchRoll(
         Cesium.Math.toRadians(heading_angle),
@@ -268,7 +256,7 @@ function rotate(heading_angle, pitch_angle, roll_angle) {
         headingPitchRoll = hpr,
         ellipsoid = Cesium.Ellipsoid.WGS84,
         fixedFrameTransform = Cesium.Transforms.eastNorthUpToFixedFrame,
-        result = rooms.modelMatrix
+        result = primitive.modelMatrix
     )
 }
 

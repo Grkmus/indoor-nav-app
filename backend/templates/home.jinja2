@@ -12,6 +12,8 @@
   <title>Hello World!</title>
   <link rel="stylesheet" href="../static/Cesium/Widgets/Animation/Animation.css">
   <link rel="stylesheet" href="../static/Cesium/Widgets/bucket.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.css">
+  
   <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
   <script src="../static/Cesium/Cesium.js"></script>
   <style>
@@ -40,7 +42,7 @@
     <input id="from" name="from" type="text">
     <label for="to">To</label>
     <input id="to" name="to" type="text">
-    <input type="checkbox" data-bind="checked: inverted"> Wheelchair
+    <input id="wheelchair" value="true" type="checkbox" data-bind="checked: inverted"> <i class="fas fa-wheelchair"></i>
     <button onclick="getRoute()" class="cesium-button">Get Route</button>
   </div>
 

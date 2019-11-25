@@ -64,7 +64,7 @@ def path(request):
     from_pnt = request.matchdict["from_pnt"]
     to_pnt = request.matchdict["to_pnt"]
     wheelchair = ""
-    if request.params.get("wheelchair"):
+    if request.params.get("wheelchair") == "true":
         wheelchair = "WHERE wheelchair=true"
     table_name = dijkstraString(request, edge_table, from_pnt, to_pnt, wheelchair)
     result = request.dbsession.execute(
