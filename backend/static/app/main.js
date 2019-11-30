@@ -178,10 +178,17 @@ axios.get('http://localhost:3000/edges').then(res => {
     scene.primitives.add(edges)
 })
 
-var rooms;
+var roomsRefPosition = new Cesium.Cartesian3.fromArray([4208684.741335429, 2334783.82860767, 4171228.132652792])
+var roomQuaternion = new Cesium.Quaternion(-0.406915339792963, -0.07548888526602932, -0.86324907714295, 0.28900236202203416)
+var rooms = new Cesium.PrimitiveCollection()
+var labels = new Cesium.LabelCollection()
+
+var hpr = Cesium.Transforms.fixedFrameToHeadingPitchRoll(roomsModelMatrix)
+var quaternion = Cesium.Transforms.headingPitchRollQuaternion(roomsRefPosition, hpr)
+var orientation = new Cesium.ConstantProperty(quaternion)
 // ROOMS
 axios.get('http://localhost:3000/rooms').then(res => {
-    // console.log(res.data)
+    console.log(orientation)
     res.data.features.forEach(feature => {
         var coordinatesArray = []
         feature.geometry.coordinates[0].forEach(coordinatePair => {
@@ -201,35 +208,38 @@ axios.get('http://localhost:3000/rooms').then(res => {
             id: feature.properties._area_id,
 
         })
+        var height;
+        if (feature.properties.level === "first_floor") {
+            height = 0.8
+        }
+        else if (feature.properties.level === "second_floor") {
+            height = 3
+        }
+        labels.add({
+            position: new Cesium.Cartesian3(feature.properties.centerpoint.coordinates[0], feature.properties.centerpoint.coordinates[1], height),
+            text: `${feature.properties.area}`,
+            distanceDisplayCondition: new Cesium.DistanceDisplayCondition(1.0, 500.0),
+            scaleByDistance: new Cesium.NearFarScalar(10, 1, 50, 0.5)
+        })
         room = new Cesium.Primitive({
 
             geometryInstances: geometryInstance,
             appearance: new Cesium.PerInstanceColorAppearance(),
             modelMatrix: roomsModelMatrix,
             asynchronous: false,
-            releaseGeometryInstances: false,
+            releaseGeometryInstances: true,
         })
         room.floor = feature.properties.level
-        // scene.primitives.add(room)
+        rooms.add(room)
     })
-    // appearance: new Cesium.MaterialAppearance({
-    //     material: Cesium.Material.fromType('Color'),
-    //     faceForward: true
-    // })
-    // new Cesium.Material({
-    //     fabric: {
-    //         type: 'Color',
-    //         uniforms: {
-    //             color: new Cesium.Color(1.0, 1.0, 0.0, 1.0)
-    //         }
-    //     }
-    // }),
-    // rooms = new Cesium.PrimitiveCollection();
-    // rooms.add(billboards); 
+    labels.modelMatrix = roomsModelMatrix
+    scene.primitives.add(labels)
 })
 
 viewer.zoomTo(tileset);
 
+// 0: -34.5759610180666
+// 1: -7.21784598864617
 
 // var heading_angle = 0
 // var pitch_angle = 0
@@ -263,7 +273,7 @@ function rotate(heading_angle, pitch_angle, roll_angle, primitive) {
 var heading = 0
 var pitch = 0
 var roll = 0
-var precision = 1
+var precision = 0.5
 window.onkeydown = function (e) {
     console.log(e);
     if (e.key == 'ArrowUp') {
@@ -295,10 +305,9 @@ window.onkeydown = function (e) {
             roll -= precision
             pitch -= precision
             heading -= precision
-            console.log("dondir")
             rotate(heading, pitch, roll, tileset)
             rotate(heading, pitch, roll, edges)
-        }, 100);
+        }, 10);
     }
 
 }
