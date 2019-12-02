@@ -72,16 +72,13 @@ var scene = viewer.scene
 // On mouse over, display all the properties for a feature in the console log.
 var handler = new Cesium.ScreenSpaceEventHandler(scene.canvas)
 handler.setInputAction(function (click) {
-    var feature = scene.pick(click.position);
+    var feature = scene.pick(click.position)
     console.log(feature)
     if (feature instanceof Cesium.Cesium3DTileFeature) {
-        feature.color = Cesium.Color.fromAlpha(Cesium.Color.GRAY, 0.5);
-        // var propertyNames = feature.getPropertyNames();
-        // var length = propertyNames.length;
-        // for (var i = 0; i < length; ++i) {
-        //     var propertyName = propertyNames[i];
-        //     // console.log(propertyName + ': ' + feature.getProperty(propertyName));
-        // }
+        feature.color = Cesium.Color.fromAlpha(Cesium.Color.GRAY, 0.5)
+        feature.getPropertyNames().forEach(propertyName => {
+            console.log(propertyName + ': ' + feature.getProperty(propertyName))
+        })
     }
     // if (feature instanceof rooms) {
     //     console.log(feature)
