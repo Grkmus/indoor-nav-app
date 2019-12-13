@@ -3,6 +3,7 @@
 *.pyc
 *$py.class
 *~
+*.pgsql
 .coverage
 coverage.xml
 build/
@@ -25,3 +26,4 @@ test
 __pycache__
 Lib
 Include
+

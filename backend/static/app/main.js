@@ -80,26 +80,20 @@ handler.setInputAction(function (click) {
             console.log(propertyName + ': ' + feature.getProperty(propertyName))
         })
     }
-    // if (feature instanceof rooms) {
-    //     console.log(feature)
-    // }
-    // if (feature instanceof edges) {
-    //     console.log(feature)
-    // }
 }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
 
 
 // click over the globe to see the cartographic position
-var coordinateClickHandler = new Cesium.ScreenSpaceEventHandler(scene.canvas);
-coordinateClickHandler.setInputAction(function (movement) {
-    var cartesian = viewer.camera.pickEllipsoid(movement.position, scene.globe.ellipsoid);
-    // console.log(cartesian)
-    var cartographic = Cesium.Cartographic.fromCartesian(cartesian);
-    var longitudeString = Cesium.Math.toDegrees(cartographic.longitude);
-    var latitudeString = Cesium.Math.toDegrees(cartographic.latitude);
-    // console.log(longitudeString, latitudeString)
-    // viewer.zoomTo(tileset)
-}, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+// var coordinateClickHandler = new Cesium.ScreenSpaceEventHandler(scene.canvas);
+// coordinateClickHandler.setInputAction(function (movement) {
+//     var cartesian = viewer.camera.pickEllipsoid(movement.position, scene.globe.ellipsoid);
+//     console.log(cartesian)
+//     var cartographic = Cesium.Cartographic.fromCartesian(cartesian);
+//     var longitudeString = Cesium.Math.toDegrees(cartographic.longitude);
+//     var latitudeString = Cesium.Math.toDegrees(cartographic.latitude);
+//     console.log(longitudeString, latitudeString)
+//     viewer.zoomTo(tileset)
+// }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
 
 var queryPath;
 function getRoute() {
@@ -275,28 +269,28 @@ window.onkeydown = function (e) {
     console.log(e);
     if (e.key == 'ArrowUp') {
         heading += precision
-        rotate(heading, pitch, roll)
+        rotate(heading, pitch, roll, tileset)
     }
     if (e.key == 'ArrowDown') {
         heading -= precision
-        rotate(heading, pitch, roll)
+        rotate(heading, pitch, roll, tileset)
     }
     if (e.key == 'ArrowLeft') {
         pitch += precision
-        rotate(heading, pitch, roll)
+        rotate(heading, pitch, roll, tileset)
     }
     if (e.key == 'ArrowRight') {
         pitch -= precision
-        rotate(heading, pitch, roll)
+        rotate(heading, pitch, roll, tileset)
     }
-    if (e.key == '4') {
-        roll -= precision
-        rotate(heading, pitch, roll)
-    }
-    if (e.key == '6') {
-        roll += precision
-        rotate(heading, pitch, roll)
-    }
+    // if (e.key == '4') {
+    //     roll -= precision
+    //     rotate(heading, pitch, roll, tileset)
+    // }
+    // if (e.key == '6') {
+    //     roll += precision
+    //     rotate(heading, pitch, roll, tileset)
+    // }
     if (e.code == 'Space') {
         setInterval(() => {
             roll -= precision
@@ -308,55 +302,3 @@ window.onkeydown = function (e) {
     }
 
 }
-
-
-
-//Create a transform for the offset.
-// var enuTransform = Cesium.Transforms.eastNorthUpToFixedFrame(position);
-
-
-// Adjust a tileset's height from the globe's surface.
-
-// var center = Cesium.Cartesian3(4208713.4652421214, 2334833.6289644390);
-// var angle = Cesium.Quaternion.fromAxisAngle({
-//     x: 1,
-//     y: 0,
-//     z: 0
-// }, Cesium.Math.toRadians(10))
-// console.log(angle)
-// var orientation = new Cesium.TranslationRotationScale()
-// tileset.modelMatrix = Cesium.Matrix4.fromTranslationRotationScale(orientation)
-// viewer.entities.add(tileset)
-// var entity = {
-//     id: 'itu',
-//     label: {
-//         show: true,
-//     },
-//     model: tileset
-// }
-
-// var entity = viewer.entities.getById('itu');
-// console.log(entity)
-
-// viewer.scene.canvas.addEventListener('click', function (e) {
-//     viewer.zoomTo(tileset);
-//     var entity = viewer.entities.getById('mou');
-//     var ellipsoid = viewer.scene.globe.ellipsoid;
-//     // Mouse over the globe to see the cartographic position 
-//     var cartesian = viewer.camera.pickEllipsoid(new Cesium.Cartesian3(e.clientX, e.clientY), ellipsoid);
-//     if (cartesian) {
-//         var cartographic = ellipsoid.cartesianToCartographic(cartesian);
-//         var x = (cartesian.x).toFixed(10);
-//         var y = (cartesian.y).toFixed(10);
-//         var z = (cartesian.z).toFixed(10);
-//         entity.position = cartesian;
-//         entity.label.show = true;
-//         entity.label.font_style = 84;
-//         //entity.position= Cesium.Cartesian2.ZERO; 
-//         entity.label.text = '(' + x + ', ' + y + ', ' + z + ')';
-//         var result = entity.label.text; // we can reuse this
-//         document.getElementById("demo").innerHTML = entity.label.text;
-//     } else {
-//         entity.label.show = false;
-//     }
-// });

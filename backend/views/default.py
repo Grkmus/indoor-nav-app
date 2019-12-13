@@ -26,16 +26,14 @@ def dijkstraString(request, edge_table, from_area, to_area, wheelchair=""):
     # Need to convert area to point to get the query path.
     from_pnt = request.dbsession.execute(f"SELECT _id FROM edges WHERE area = {from_area}").first()[0]
     to_pnt = request.dbsession.execute(f"SELECT _id FROM edges WHERE area = {to_area}").first()[0]
-    return """
+    return f"""
             pgr_dijkstra(
                 'SELECT _id id, source, target, _length as cost, _length as reverse_cost 
                 FROM {edge_table} {wheelchair}',
                 {from_pnt}, {to_pnt}
             ) AS result 
             JOIN {edge_table} as f_edges ON result.edge = f_edges._id
-        """.format(
-        edge_table=edge_table, from_pnt=from_pnt, to_pnt=to_pnt, wheelchair=wheelchair
-    )
+        """
 
 
 @view_config(route_name="rooms", renderer="json")
